@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chinese Flashcards</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f4f8;
+    }
+
+    .flashcard {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    .pinyin {
+      font-size: 24px;
+      color: #555;
+    }
+
+    .chinese {
+      font-size: 40px;
+      margin: 20px 0;
+      color: #222;
+    }
+
+    .english {
+      font-size: 20px;
+      color: #888;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #3b82f6;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+    
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flashcard">
+    <div class="pinyin" id="pinyin">Pinyin</div>
+    <div class="chinese" id="chinese">汉字</div>
+    <div class="english" id="english">Translation</div>
+    <div class="button-row">
+      <button onclick="toggleDetails()" id="toggleButton">Hide Pinyin & Translation</button>
+      <button onclick="nextCard()">Next</button>
+    </div>
+  </div>
+
+  <script>
+  const cards = [
+    // Original list
+    { pinyin: "méi", chinese: "没", english: "not / no" },
+    { pinyin: "xiāngzi", chinese: "箱子", english: "box / suitcase" },
+    { pinyin: "yǒu", chinese: "有", english: "to have / there is" },
+    { pinyin: "zhèr", chinese: "这儿", english: "here" },
+    { pinyin: "zhòng", chinese: "重", english: "heavy" },
+    { pinyin: "hēi", chinese: "黑", english: "black" },
+    { pinyin: "hóng", chinese: "红", english: "red" },
+    { pinyin: "qīng", chinese: "轻", english: "light (in weight)" },
+    { pinyin: "jiù", chinese: "旧", english: "old (used)" },
+    { pinyin: "yào", chinese: "药", english: "medicine" },
+    { pinyin: "zhōngyào", chinese: "中药", english: "traditional Chinese medicine" },
+    { pinyin: "xīyào", chinese: "西药", english: "Western medicine" },
+    { pinyin: "cháyè", chinese: "茶叶", english: "tea leaves" },
+    { pinyin: "lǐ", chinese: "里", english: "inside" },
+    { pinyin: "rìyòngpǐn", chinese: "日用品", english: "daily necessities" },
+    { pinyin: "jiàn", chinese: "件", english: "(measure word for clothing, matters, etc.)" },
+    { pinyin: "yīfu", chinese: "衣服", english: "clothes" },
+    { pinyin: "bǎ", chinese: "把", english: "(measure word for objects with handles)" },
+    { pinyin: "yǔsǎn", chinese: "雨伞", english: "umbrella" },
+    { pinyin: "yǔ", chinese: "雨", english: "rain" },
+    { pinyin: "píngbǎn diànhǎo", chinese: "平板电脑", english: "tablet (computer)" },
+    { pinyin: "běn", chinese: "本", english: "(measure word for books)" },
+    { pinyin: "cídiǎn", chinese: "词典", english: "dictionary" },
+    { pinyin: "yōupán", chinese: "优盘", english: "USB drive" },
+    { pinyin: "zhī", chinese: "支", english: "(measure word for pens)" },
+    { pinyin: "máobǐ", chinese: "毛笔", english: "writing brush" },
+
+    // New words
+    { pinyin: "yǔyán", chinese: "语言", english: "language" },
+    { pinyin: "dàxué", chinese: "大学", english: "university" },
+    { pinyin: "zěnmeyàng", chinese: "怎么样", english: "how (is it)" },
+    { pinyin: "juéde", chinese: "觉得", english: "to feel / to think" },
+    { pinyin: "yǔfǎ", chinese: "语法", english: "grammar" },
+    { pinyin: "tīng", chinese: "听", english: "to listen" },
+    { pinyin: "shuō", chinese: "说", english: "to speak" },
+    { pinyin: "bǐjiào", chinese: "比较", english: "comparatively / rather" },
+    { pinyin: "róngyì", chinese: "容易", english: "easy" },
+    { pinyin: "dànshì", chinese: "但是", english: "but / however" },
+    { pinyin: "dú", chinese: "读", english: "to read aloud" },
+    { pinyin: "xiě", chinese: "写", english: "to write" },
+    { pinyin: "gěi", chinese: "给", english: "to give / for" },
+    { pinyin: "xīn", chinese: "新", english: "new" },
+    { pinyin: "tóngxué", chinese: "同学", english: "classmate" },
+    { pinyin: "tóngwū", chinese: "同屋", english: "roommate" },
+    { pinyin: "bān", chinese: "班", english: "class (group)" },
+
+    { pinyin: "mìshū", chinese: "秘书", english: "secretary" },
+    { pinyin: "xiān", chinese: "先", english: "first" },
+    { pinyin: "jièshào", chinese: "介绍", english: "to introduce" },
+    { pinyin: "yíxiàr", chinese: "一下儿", english: "a little bit / briefly" },
+    { pinyin: "xiàozhǎng", chinese: "校长", english: "principal / president (of a school)" },
+    { pinyin: "wèi", chinese: "位", english: "(polite measure word for people)" },
+    { pinyin: "jiàoshòu", chinese: "教授", english: "professor" },
+    { pinyin: "huānyíng", chinese: "欢迎", english: "to welcome" },
+    { pinyin: "liúxuéshēng", chinese: "留学生", english: "foreign student" },
+    { pinyin: "liúxué", chinese: "留学", english: "to study abroad" },
+    { pinyin: "wǒmen", chinese: "我们", english: "we / us" },
+    { pinyin: "nǐmen", chinese: "你们", english: "you (plural)" },
+    { pinyin: "tāmen", chinese: "他们", english: "they / them" },
+    { pinyin: "dōu", chinese: "都", english: "all / both" },
+    { pinyin: "hé", chinese: "和", english: "and" },
+    { pinyin: "liǎ", chinese: "俩", english: "two (people)" },
+    { pinyin: "xuéshēng", chinese: "学生", english: "student" },
+    { pinyin: "méi shénme", chinese: "没什么", english: "it’s nothing / don’t mention it" },
+
+    { pinyin: "bàngōngshì", chinese: "办公室", english: "office" },
+    { pinyin: "bàngōng", chinese: "办公", english: "to work (in office)" },
+    { pinyin: "zhǎo", chinese: "找", english: "to look for" },
+    { pinyin: "zài", chinese: "在", english: "at / in / on" },
+    { pinyin: "jiā", chinese: "家", english: "home / family" },
+    { pinyin: "ne", chinese: "呢", english: "question particle (and you?)" },
+    { pinyin: "zhù", chinese: "住", english: "to live / reside" },
+    { pinyin: "hào", chinese: "号", english: "number" },
+    { pinyin: "lóu", chinese: "楼", english: "building / floor" },
+    { pinyin: "mén", chinese: "门", english: "door / entrance" },
+    { pinyin: "líng", chinese: "零", english: "zero" },
+    { pinyin: "fángjiān", chinese: "房间", english: "room" },
+    { pinyin: "zhīdào", chinese: "知道", english: "to know" },
+    { pinyin: "diànhuà", chinese: "电话", english: "telephone" },
+    { pinyin: "diàn", chinese: "电", english: "electric / electricity" },
+    { pinyin: "huà", chinese: "话", english: "speech / talk" },
+    { pinyin: "hàomǎ", chinese: "号码", english: "number (for phone, etc.)" },
+    { pinyin: "shǒujī", chinese: "手机", english: "mobile phone" },
+    { pinyin: "shǒu", chinese: "手", english: "hand" },
+
+    { pinyin: "jīnglǐ", chinese: "经理", english: "manager" },
+    { pinyin: "hǎojiǔ", chinese: "好久", english: "a long time" },
+    { pinyin: "a", chinese: "啊", english: "ah! (exclamation)" },
+    { pinyin: "mǎmǎhūhū", chinese: "马马虎虎", english: "so-so" },
+    { pinyin: "zuìjìn", chinese: "最近", english: "recently / lately" },
+    { pinyin: "gāng", chinese: "刚", english: "just / just now" },
+    { pinyin: "kāixué", chinese: "开学", english: "school opens / new semester begins" },
+    { pinyin: "kāi", chinese: "开", english: "to open / start" },
+    { pinyin: "yǒu yìdiǎnr", chinese: "有一点儿", english: "a little bit (negative)" },
+    { pinyin: "háishì", chinese: "还是", english: "or (in questions) / still" },
+    { pinyin: "kāfēi", chinese: "咖啡", english: "coffee" },
+    { pinyin: "bēi", chinese: "杯", english: "(measure word for cup/glass)" },
+    { pinyin: "chē", chinese: "车", english: "vehicle" },
+    { pinyin: "zìxíngchē", chinese: "自行车", english: "bicycle" },
+    { pinyin: "qìchē", chinese: "汽车", english: "car" },
+    { pinyin: "mótuōchē", chinese: "摩托车", english: "motorcycle" },
+    { pinyin: "chūzūchē", chinese: "出租车", english: "taxi" },
+    { pinyin: "yánsè", chinese: "颜色", english: "color" },
+
+    { pinyin: "quán", chinese: "全", english: "whole / entire" },
+    { pinyin: "zhàopiàn", chinese: "照片", english: "photo" },
+    { pinyin: "zhāng", chinese: "张", english: "(measure word for flat objects, photos)" },
+    { pinyin: "kàn", chinese: "看", english: "to look / to see" },
+    { pinyin: "jiějie", chinese: "姐姐", english: "older sister" },
+    { pinyin: "zhǐ", chinese: "只", english: "(measure word for animals, one of a pair)" },
+    { pinyin: "zuò", chinese: "做", english: "to do / to make" },
+    { pinyin: "dàfū", chinese: "大夫", english: "doctor" },
+    { pinyin: "yīyuàn", chinese: "医院", english: "hospital" },
+    { pinyin: "gōngsī", chinese: "公司", english: "company" },
+    { pinyin: "shāngdiàn", chinese: "商店", english: "store / shop" },
+    { pinyin: "lǜshī", chinese: "律师", english: "lawyer" },
+    { pinyin: "wàimào", chinese: "外贸", english: "foreign trade" },
+    { pinyin: "xiǎo", chinese: "小", english: "small / young" },
+    { pinyin: "yuángōng", chinese: "员工", english: "employee / staff" },
+    { pinyin: "dàgài", chinese: "大概", english: "probably / approximately" },
+    { pinyin: "duō", chinese: "多", english: "many / much" },
+    { pinyin: "wàiguó", chinese: "外国", english: "foreign country" }
+  ];
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'h') {
+        toggleDetails();
+      } else if (e.key === 'ArrowRight') {
+        nextCard();
+      }
+    });
+
+    let detailsHidden = false;
+
+    function toggleDetails() {
+      const pinyin = document.getElementById('pinyin');
+      const english = document.getElementById('english');
+      const toggleButton = document.getElementById('toggleButton');
+
+      detailsHidden = !detailsHidden;
+
+      pinyin.style.display = detailsHidden ? 'none' : 'block';
+      english.style.display = detailsHidden ? 'none' : 'block';
+      toggleButton.textContent = detailsHidden ? 'Show Pinyin & Translation' : 'Hide Pinyin & Translation';
+    }
+    // Fisher-Yates shuffle
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    shuffle(cards);
+
+    let currentIndex = 0;
+
+    function showCard(index) {
+      const card = cards[index];
+      document.getElementById("pinyin").textContent = card.pinyin;
+      document.getElementById("chinese").textContent = card.chinese;
+      document.getElementById("english").textContent = card.english;
+    }
+
+    function nextCard() {
+      currentIndex = (currentIndex + 1) % cards.length;
+      showCard(currentIndex);
+    }
+
+    // Show first card on load
+    showCard(currentIndex);
+  </script>
+
+</body>
+</html>
